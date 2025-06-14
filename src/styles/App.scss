@@ -1,0 +1,27 @@
+@use './mixins' as *;
+
+.box {
+  width: 100dvw;
+  height: 100dvh;
+  overflow: hidden;
+  @include flex-center(column);
+  gap: 2rem;
+
+  & .info {
+    height: max-content;
+    @include flex-center(column);
+    gap: 0.5rem;
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+    }
+  }
+
+  & .dropdown-container {
+    @include flex-center(column);
+    gap: 0.4rem;
+    min-width: 280px;
+    max-width: 450px;
+  }
+}
