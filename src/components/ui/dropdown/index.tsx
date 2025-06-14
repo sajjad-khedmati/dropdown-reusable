@@ -4,6 +4,7 @@ import DropdownTrigger from './dropdown-trigger';
 import './dropdown.scss';
 import DropdownContent from './dropdown-content';
 import DropdownItem from './dropdown-item';
+import { useOutsideClick } from '../../../hooks/use-outside-click';
 
 export interface DropdownOptions {
   value: string;
@@ -37,9 +38,13 @@ export default function Dropdown({ placeholder, initOptions }: Readonly<Dropdown
     options.push(newOptionObj);
     setOptions([...options]);
   };
+  const handleClose = () => {
+    setIsOpen(false);
+  };
 
+  const ref = useOutsideClick<HTMLDivElement>(handleClose);
   return (
-    <div className="dropdown">
+    <div className="dropdown" ref={ref}>
       <DropdownTrigger isOpen={isOpen} setIsOpen={setIsOpen}>
         {activeOption ? activeOption.value : placeholder}
       </DropdownTrigger>
