@@ -40,6 +40,18 @@
     }
   }
 
+  &.drop-up {
+    .dropdown-content {
+      top: auto;
+      bottom: 100%; // position above the trigger
+      transform: translateY(10px);
+
+      &.open {
+        transform: translateY(0);
+      }
+    }
+  }
+
   .dropdown-content {
     position: absolute;
     top: 90%;

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { v4 as uuid } from 'uuid';
 import DropdownTrigger from './dropdown-trigger';
 import './dropdown.scss';
@@ -25,6 +25,10 @@ export default function Dropdown({ placeholder, initOptions }: Readonly<Dropdown
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
+  const [dropUp, setDropUp] = useState(false);
+
+  const triggerRef = useRef<HTMLDivElement>(null);
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (newOption.trim() === '') return;
@@ -42,12 +46,28 @@ export default function Dropdown({ placeholder, initOptions }: Readonly<Dropdown
     setIsOpen(false);
   };
 
+  useEffect(() => {
+    if (!isOpen || !triggerRef.current) return;
+
+    const rect = triggerRef.current.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    if (spaceBelow < 300 && spaceAbove > 300) {
+      setDropUp(true);
+    } else {
+      setDropUp(false);
+    }
+  }, [isOpen]);
+
   const ref = useOutsideClick<HTMLDivElement>(handleClose);
   return (
-    <div className="dropdown" ref={ref}>
-      <DropdownTrigger isOpen={isOpen} setIsOpen={setIsOpen}>
-        {activeOption ? activeOption.value : placeholder}
-      </DropdownTrigger>
+    <div className={`dropdown ${dropUp ? 'drop-up' : ''}`} ref={ref}>
+      <div ref={triggerRef}>
+        <DropdownTrigger isOpen={isOpen} setIsOpen={setIsOpen}>
+          {activeOption ? activeOption.value : placeholder}
+        </DropdownTrigger>
+      </div>
       <DropdownContent isOpen={isOpen} setIsOpen={setIsOpen}>
         <form onSubmit={e => handleSubmit(e)} className="add-option-form">
           <input
