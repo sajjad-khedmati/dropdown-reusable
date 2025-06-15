@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { v4 as uuid } from 'uuid';
 import DropdownTrigger from './dropdown-trigger';
 import './dropdown.scss';
 import DropdownContent from './dropdown-content';
-import DropdownItem from './dropdown-item';
 import { useOutsideClick } from '../../../hooks/use-outside-click';
 
 export interface DropdownOptions {
@@ -17,7 +15,7 @@ interface DropdownProps {
 }
 
 export default function Dropdown({ placeholder, initOptions }: Readonly<DropdownProps>) {
-  // Initializing the options based on default options
+  //* Initializing the options based on default options
   const [options, setOptions] = useState<DropdownOptions[]>(initOptions);
 
   const [activeOption, setActiveOption] = useState<DropdownOptions | null>(null);
@@ -25,13 +23,14 @@ export default function Dropdown({ placeholder, initOptions }: Readonly<Dropdown
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
+  //* dropdown content direction handle
   const [dropUp, setDropUp] = useState(false);
-
   const triggerRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (newOption.trim() === '') return;
+    // ? prevent from duplicate items inside the option list
     if (options.find(item => item.value.toLowerCase() === newOption.trim().toLowerCase())) return;
     const newOptionObj: DropdownOptions = {
       value: newOption.trim(),
@@ -42,11 +41,15 @@ export default function Dropdown({ placeholder, initOptions }: Readonly<Dropdown
     options.push(newOptionObj);
     setOptions([...options]);
   };
+
   const handleClose = () => {
     setIsOpen(false);
   };
 
   useEffect(() => {
+    // ? this for dropdown options direction - if the screen height is less than the
+    // ? modal size , then open it on the top of dropdown trigger
+    // * thats important for responsive design
     if (!isOpen || !triggerRef.current) return;
 
     const rect = triggerRef.current.getBoundingClientRect();
@@ -68,7 +71,13 @@ export default function Dropdown({ placeholder, initOptions }: Readonly<Dropdown
           {activeOption ? activeOption.value : placeholder}
         </DropdownTrigger>
       </div>
-      <DropdownContent isOpen={isOpen} setIsOpen={setIsOpen}>
+      <DropdownContent
+        isOpen={isOpen}
+        options={options}
+        activeOption={activeOption}
+        setActiveOption={setActiveOption}
+      >
+        {/* Dropdown add options */}
         <form onSubmit={e => handleSubmit(e)} className="add-option-form">
           <input
             placeholder="Add new item"
@@ -77,25 +86,6 @@ export default function Dropdown({ placeholder, initOptions }: Readonly<Dropdown
             onChange={e => setNewOption(e.target.value)}
           />
         </form>
-        <div className="option-box">
-          {options.map(option => (
-            <button
-              disabled={option.disabled}
-              key={uuid()}
-              onClick={() => {
-                if (option.disabled) return;
-                setActiveOption(option);
-              }}
-            >
-              <DropdownItem
-                value={option.value}
-                disabled={option.disabled}
-                isSelected={option.value === activeOption?.value}
-              />
-            </button>
-          ))}
-        </div>
-        {options.length === 0 && <div className="no-options">No options available</div>}
       </DropdownContent>
     </div>
   );

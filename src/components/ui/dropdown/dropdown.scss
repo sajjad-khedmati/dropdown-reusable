@@ -1,5 +1,9 @@
 @use '../../../styles/variables' as *;
 
+select {
+  all: unset;
+}
+
 .dropdown {
   position: relative;
   display: inline-block;
@@ -7,6 +11,7 @@
 
   .dropdown-trigger {
     position: relative;
+    width: 100%;
     cursor: pointer;
     display: flex;
     user-select: none;
